@@ -11,14 +11,21 @@ namespace Propelle.InterviewChallenge.Application.EventBus
             _exchange = exchange;
         }
 
-        public async Task Publish<TEvent>(TEvent @event)
+        public async Task Publish<TEvent>(TEvent @event, TransientException error = null)
             where TEvent : class
         {
-            /* If you've found this, you're eagled-eyed! Let us know in the interview if you see this, and have a think about the ramifications of 
-             * changing SimulatePotentialFailure() to have a higher than zero chance of throwing an exception (i.e. simulating a real event-bus being unavailable at times) */
-            PointOfFailure.SimulatePotentialFailure(0);
+            try
+            {
+                /* If you've found this, you're eagled-eyed! Let us know in the interview if you see this, and have a think about the ramifications of 
+                * changing SimulatePotentialFailure() to have a higher than zero chance of throwing an exception (i.e. simulating a real event-bus being unavailable at times) */
+                PointOfFailure.SimulatePotentialFailure();
 
-            await _exchange.Publish(@event);
+                await _exchange.Publish(@event);
+            }
+            catch (TransientException e)
+            {
+                await Publish(@event, e);
+            }
         }
     }
 }

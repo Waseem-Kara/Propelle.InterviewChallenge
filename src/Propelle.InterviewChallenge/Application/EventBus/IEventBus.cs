@@ -2,6 +2,6 @@
 {
     public interface IEventBus
     {
-        Task Publish<TEvent>(TEvent @event) where TEvent : class;
+        Task Publish<TEvent>(TEvent @event, TransientException message = null) where TEvent : class;
     }
 }

@@ -13,9 +13,19 @@
 
         public Task SubmitDeposit(Guid userId, decimal amount)
         {
-            PointOfFailure.SimulatePotentialFailure();
 
-            _submittedDeposits.Add((userId, amount));
+            try
+            {
+                PointOfFailure.SimulatePotentialFailure();
+
+                _submittedDeposits.Add((userId, amount));
+            }
+            catch (TransientException)
+            {
+
+                SubmitDeposit(userId, amount);
+            }
+
 
             return Task.CompletedTask;
         }
